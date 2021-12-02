@@ -1,3 +1,4 @@
+
 use std::fs::File;
 use std::io::{self, BufRead};
 
@@ -30,7 +31,7 @@ fn get_numbers_from_string_list(lines: Vec<String>) -> Result<Vec<i32>, &'static
   Ok(result_list)
 }
 
-fn count_number_of_going_down(numbers: Vec<i32>) -> i32 {
+fn count_number_of_going_up(numbers: &Vec<i32>) -> i32 {
   let mut last = None;
   let mut increasing: i32 = 0;
   for number in numbers {
@@ -44,11 +45,36 @@ fn count_number_of_going_down(numbers: Vec<i32>) -> i32 {
   return increasing;
 }
 
+fn get_sliding_window_list(numbers : Vec<i32>, window_size: usize) -> Result<Vec<i32>, &'static str> {
+
+  if window_size > numbers.len() {
+    return Err("window size is bigger than number of numbers");
+  }
+
+  let mut result_list = vec!();
+
+  for index in 0..(numbers.len() - window_size + 1) {
+    result_list.push(sum(&numbers[index .. index + window_size]));
+  }
+
+  return Ok(result_list);
+}
+
+fn sum(slice: &[i32]) -> i32 {
+  return slice.iter().sum();
+}
+
 fn main() {
   if let Ok(file_lines) = get_lines_from_file("./input") {
     if let Ok(number_list) = get_numbers_from_string_list(file_lines) {
-      let increasing = count_number_of_going_down(number_list);
+      let increasing = count_number_of_going_up(&number_list);
       println!("Number of increasing: {}", increasing);
+      println!("{}", number_list.len());
+      if let Ok(sliding_window_list) = get_sliding_window_list(number_list, 3) {
+        let increasing_sliding_window = count_number_of_going_up(&sliding_window_list);
+        println!("{}", sliding_window_list.len());
+        println!("Number of increasing in sliding window: {}", increasing_sliding_window);
+      }
     }
   }
 }
