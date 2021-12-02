@@ -20,26 +20,30 @@ impl fmt::Display for Direction {
 
 struct Submarine {
   horizontal: i32,
-  vertical: i32
+  vertical: i32,
+  aim: i32
 }
 
 impl Submarine {
   fn zero() -> Submarine {
-    return Submarine { horizontal:0, vertical: 0 };
+    return Submarine { horizontal:0, vertical: 0, aim: 0 };
   }
 
   fn move_to(&mut self, direction: &Direction) {
     match direction {
-      Direction::Forward(x) => self.horizontal += x,
-      Direction::Down(x) => self.vertical += x,
-      Direction::Up(x) => self.vertical -= x
+      Direction::Forward(x) => {
+        self.horizontal += x;
+        self.vertical += self.aim * x
+      },
+      Direction::Down(x) => self.aim += x,
+      Direction::Up(x) => self.aim -= x
     }
   }
 }
 
 impl fmt::Display for Submarine {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "Submarine(h={}, v={})", self.horizontal, self.vertical)
+    write!(f, "Submarine(h={}, v={}, a={})", self.horizontal, self.vertical, self.aim)
   }
 }
 
@@ -99,5 +103,6 @@ fn main() {
       }
     }
 
+    println!("{}", submarine);
     println!("{}", submarine.horizontal * submarine.vertical);
 }
